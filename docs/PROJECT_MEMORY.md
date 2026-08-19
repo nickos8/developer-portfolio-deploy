@@ -6,8 +6,8 @@
 
 **Last updated:** 2026-08-19  
 **Repository:** `nickos8/developer-portfolio`  
-**Current phase:** Projects CRUD, API scaffolding in progress  
-**Next exact task:** Run `herd php artisan migrate:status`, inspect the Sanctum/API scaffolding, then connect `GET /api/projects` to `ProjectController@index`.
+**Current phase:** Projects CRUD, first public GET endpoint verified locally  
+**Next exact task:** Run `git diff --check`, inspect `git status --short`, commit the verified API scaffolding, rebase onto the remote documentation commits, and push.
 
 ## 1. Project purpose
 
@@ -155,7 +155,7 @@ Model casts:
 
 ## 6. Current pause checkpoint
 
-Work paused safely on 2026-08-19 after Sanctum installed successfully.
+Work paused safely on 2026-08-19 after the first public Projects API endpoint was verified.
 
 Verified local work that is not yet committed or pushed:
 
@@ -166,6 +166,14 @@ Verified local work that is not yet committed or pushed:
 - Installed `laravel/sanctum` v4.3.3 using Herd Composer
 - Package discovery completed with no security advisories
 - No database migration was run during the partial installation attempt
+- Confirmed no pending migrations with `herd php artisan migrate:status`
+- Registered only `GET /api/projects` and removed the unused default `/api/user` route
+- Formatted the controller and route with Laravel Pint
+- Verified the route with `herd php artisan route:list --path=api`
+- Verified the live endpoint with `curl http://127.0.0.1:8000/api/projects`
+- Received `[]`, a valid empty JSON collection because no published projects match the query
+- Ran the existing automated suite: 2 tests passed with 2 assertions
+- The default automated tests do not yet specifically cover `/api/projects`; the endpoint was manually verified
 
 Expected local Git status at pause:
 
@@ -189,11 +197,12 @@ Resume procedure:
 
 1. Do not pull immediately if local changes are still present.
 2. Run `git status --short` and confirm the files above.
-3. Run `herd php artisan migrate:status` as the next read-only check.
-4. Inspect `routes/api.php` and `bootstrap/app.php`.
-5. Complete and test `GET /api/projects`.
-6. Commit and push the verified API checkpoint.
-7. Reconcile this remotely updated memory file carefully if Git reports that the local branch is behind.
+3. Run `git diff --check`; it should return no output.
+4. Run `git status --short` and inspect the exact local change set.
+5. Commit the verified API scaffolding locally.
+6. Rebase the local commit onto the newer remote documentation commits.
+7. Push the reconciled `main` branch.
+8. Begin the next learning step: project creation validation and the protected write-side design.
 
 ## 7. Development roadmap
 
