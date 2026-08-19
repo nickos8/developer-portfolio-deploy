@@ -6,8 +6,8 @@
 
 **Last updated:** 2026-08-19  
 **Repository:** `nickos8/developer-portfolio`  
-**Current phase:** Projects CRUD, backend database layer completed  
-**Next exact task:** Create the Laravel `ProjectController` and learn request validation before implementing API actions.
+**Current phase:** Projects CRUD, API scaffolding in progress  
+**Next exact task:** Run `herd php artisan migrate:status`, inspect the Sanctum/API scaffolding, then connect `GET /api/projects` to `ProjectController@index`.
 
 ## 1. Project purpose
 
@@ -153,7 +153,49 @@ Model casts:
 | Project management interface | Planned |
 | Deployment | Planned |
 
-## 6. Development roadmap
+## 6. Current pause checkpoint
+
+Work paused safely on 2026-08-19 after Sanctum installed successfully.
+
+Verified local work that is not yet committed or pushed:
+
+- Created `app/Http/Controllers/ProjectController.php` with a public `index()` query
+- The query returns published projects ordered by `display_order`
+- Verified the controller with `herd php -l`
+- Created and registered `routes/api.php`
+- Installed `laravel/sanctum` v4.3.3 using Herd Composer
+- Package discovery completed with no security advisories
+- No database migration was run during the partial installation attempt
+
+Expected local Git status at pause:
+
+```text
+M bootstrap/app.php
+M composer.json
+M composer.lock
+?? app/Http/Controllers/ProjectController.php
+?? routes/api.php
+```
+
+Environment discovery:
+
+- `herd php` uses PHP 8.4.24
+- `herd composer` uses PHP 8.4.24
+- Plain `php` and `composer` use XAMPP PHP 8.2.12
+- Laravel 13 dependencies require PHP 8.3 or newer
+- Always use `herd php` and `herd composer` for this project
+
+Resume procedure:
+
+1. Do not pull immediately if local changes are still present.
+2. Run `git status --short` and confirm the files above.
+3. Run `herd php artisan migrate:status` as the next read-only check.
+4. Inspect `routes/api.php` and `bootstrap/app.php`.
+5. Complete and test `GET /api/projects`.
+6. Commit and push the verified API checkpoint.
+7. Reconcile this remotely updated memory file carefully if Git reports that the local branch is behind.
+
+## 7. Development roadmap
 
 ### Phase 1: Projects backend CRUD
 
@@ -209,7 +251,7 @@ Planned sections:
 - Deployment
 - Final professional README
 
-## 7. Technical decisions
+## 8. Technical decisions
 
 1. **Separate frontend and backend folders:** Makes the React client and Laravel API responsibilities clear.
 2. **Supabase PostgreSQL:** Provides a hosted database while Laravel remains responsible for application logic.
@@ -222,7 +264,7 @@ Planned sections:
 9. **Display order:** Allows intentional project ordering without relying only on creation date.
 10. **Private repository during development:** Protects unfinished work. Visibility can change when the portfolio is ready.
 
-## 8. Learning record
+## 9. Learning record
 
 ### Confirmed concepts
 
@@ -255,7 +297,7 @@ validation = correctness checking
 - Authentication and authorization
 - Automated backend testing
 
-## 9. Problems solved
+## 10. Problems solved
 
 ### Supabase password authentication failure
 
@@ -276,6 +318,20 @@ Security action:
 - Previously exposed credentials were rotated.
 - Real secrets remain only in the ignored local `.env`.
 
+### Composer used incompatible XAMPP PHP
+
+Cause:
+
+- Plain `composer` used XAMPP PHP 8.2.12.
+- Laravel 13 dependencies require PHP 8.3 or newer.
+- `install:api` therefore could not install Sanctum through the plain Composer executable.
+
+Resolution:
+
+- Verified Herd PHP and Composer use PHP 8.4.24.
+- Installed Sanctum v4.3.3 with `herd composer require laravel/sanctum`.
+- Established the rule to use Herd-prefixed PHP and Composer commands for this project.
+
 ### Windows CMD parsing error with Tinker
 
 Cause:
@@ -286,7 +342,7 @@ Resolution:
 
 - Used `herd php artisan db:show --database=pgsql` for the connection test.
 
-## 10. Safe continuation checklist
+## 11. Safe continuation checklist
 
 At the beginning of a future session:
 
@@ -315,7 +371,7 @@ herd php artisan migrate:status
 herd php artisan db:table projects
 ```
 
-## 11. Documentation update policy
+## 12. Documentation update policy
 
 Update this file whenever any of the following occurs:
 
