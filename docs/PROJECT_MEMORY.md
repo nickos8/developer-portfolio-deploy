@@ -6,8 +6,8 @@
 
 **Last updated:** 2026-08-19  
 **Repository:** `nickos8/developer-portfolio`  
-**Current phase:** Projects CRUD, first public GET endpoint verified locally  
-**Next exact task:** Run `git diff --check`, inspect `git status --short`, commit the verified API scaffolding, rebase onto the remote documentation commits, and push.
+**Current phase:** Projects CRUD, first public GET endpoint published  
+**Next exact task:** Learn Laravel Form Request validation and design project creation without exposing an unprotected public write route.
 
 ## 1. Project purpose
 
@@ -102,6 +102,21 @@ Commit: `2607a9f` — **Add Project model and database migration**
 - Verified the table in the `laravel` schema
 - Verified 14 columns and the unique slug index
 
+### Checkpoint 4: Public Projects API
+
+Commit: `27318f1` — **Add public Projects API endpoint**
+
+- Enabled Laravel API routing through `bootstrap/app.php`
+- Added `routes/api.php`
+- Installed Laravel Sanctum v4.3.3 for future authentication
+- Added `GET /api/projects`
+- Implemented `ProjectController@index`
+- Filters records to `is_published = true`
+- Orders records by `display_order`
+- Verified the endpoint manually with a valid empty JSON collection
+- Verified the existing automated test suite: 2 tests passed
+- Published the checkpoint to GitHub
+
 ## 4. Projects table design
 
 | Column | Type | Purpose |
@@ -144,65 +159,52 @@ Model casts:
 | Project model | Complete |
 | Projects migration | Complete |
 | Projects table verification | Complete |
-| ProjectController | Next |
-| Request validation | Not started |
-| Projects API routes | Not started |
-| API endpoint testing | Not started |
+| ProjectController | Public `index()` complete; write actions remain |
+| Request validation | Next |
+| Projects API routes | Public `GET /api/projects` complete |
+| API endpoint testing | Public GET manually verified |
 | React API integration | Not started |
 | Public projects interface | Not started |
 | Project management interface | Planned |
 | Deployment | Planned |
 
-## 6. Current pause checkpoint
+## 6. Latest verified checkpoint
 
-Work paused safely on 2026-08-19 after the first public Projects API endpoint was verified.
-
-Verified local work that is not yet committed or pushed:
-
-- Created `app/Http/Controllers/ProjectController.php` with a public `index()` query
-- The query returns published projects ordered by `display_order`
-- Verified the controller with `herd php -l`
-- Created and registered `routes/api.php`
-- Installed `laravel/sanctum` v4.3.3 using Herd Composer
-- Package discovery completed with no security advisories
-- No database migration was run during the partial installation attempt
-- Confirmed no pending migrations with `herd php artisan migrate:status`
-- Registered only `GET /api/projects` and removed the unused default `/api/user` route
-- Formatted the controller and route with Laravel Pint
-- Verified the route with `herd php artisan route:list --path=api`
-- Verified the live endpoint with `curl http://127.0.0.1:8000/api/projects`
-- Received `[]`, a valid empty JSON collection because no published projects match the query
-- Ran the existing automated suite: 2 tests passed with 2 assertions
-- The default automated tests do not yet specifically cover `/api/projects`; the endpoint was manually verified
-
-Expected local Git status at pause:
+The public Projects read endpoint is committed and published.
 
 ```text
-M bootstrap/app.php
-M composer.json
-M composer.lock
-?? app/Http/Controllers/ProjectController.php
-?? routes/api.php
+GET /api/projects
+→ routes/api.php
+→ ProjectController@index
+→ Project model
+→ Supabase PostgreSQL
+→ JSON collection
 ```
 
-Environment discovery:
+Verification completed:
 
-- `herd php` uses PHP 8.4.24
-- `herd composer` uses PHP 8.4.24
-- Plain `php` and `composer` use XAMPP PHP 8.2.12
-- Laravel 13 dependencies require PHP 8.3 or newer
-- Always use `herd php` and `herd composer` for this project
+- Only `GET /api/projects` is registered in the API route file
+- Laravel Pint completed successfully
+- `herd php artisan migrate:status` showed no pending migrations
+- `curl http://127.0.0.1:8000/api/projects` returned `[]`
+- `[]` means the query succeeded but found no published projects
+- Existing automated suite passed: 2 tests, 2 assertions
+- Commit `27318f1` is published on `origin/main`
+- Local `main` was confirmed clean and synchronized immediately after the push
 
-Resume procedure:
+Environment rule:
 
-1. Do not pull immediately if local changes are still present.
-2. Run `git status --short` and confirm the files above.
-3. Run `git diff --check`; it should return no output.
-4. Run `git status --short` and inspect the exact local change set.
-5. Commit the verified API scaffolding locally.
-6. Rebase the local commit onto the newer remote documentation commits.
-7. Push the reconciled `main` branch.
-8. Begin the next learning step: project creation validation and the protected write-side design.
+- Use `herd php` and `herd composer` for this Laravel 13 project
+- Plain PHP and Composer still point to incompatible XAMPP PHP 8.2.12
+
+Next learning sequence:
+
+1. Understand why write endpoints require validation and authorization.
+2. Create a dedicated Form Request for project creation.
+3. Define rules for every project field.
+4. Implement `ProjectController@store`.
+5. Decide and configure authentication before exposing the POST route.
+6. Add endpoint-specific automated tests.
 
 ## 7. Development roadmap
 
