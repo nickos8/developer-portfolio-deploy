@@ -1,0 +1,120 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Models\Project;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+class ProjectApiTest extends TestCase
+{
+    use RefreshDatabase;
+
+    public function test_guest_cannot_create_project(): void
+    {
+        $response = $this->postJson(
+            '/api/projects',
+            $this->validProjectData(),
+        );
+
+        $response->assertUnauthorized();
+
+        $this->assertDatabaseCount('projects', 0);
+    }
+
+    public function test_authenticated_user_can_create_project(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user);
+
+        $response = $this->postJson(
+            '/api/projects',
+            $this->validProjectData(),
+        );
+
+        $response
+            ->assertCreated()
+            ->assertJsonPath('title', 'Portfolio System')
+            ->assertJsonPath('slug', 'portfolio-system');
+
+        $this->assertDatabaseHas('projects', [
+            'title' => 'Portfolio System',
+            'slug' => 'portfolio-system',
+        ]);
+    }
+
+    public function test_duplicate_project_title_receives_unique_slug(): void
+    {
+        Project::create([
+            ...$this->validProjectData(),
+            'slug' => 'portfolio-system',
+        ]);
+
+        $user = User::factory()->create();
+
+        $this->actingAs($user);
+
+        $response = $this->postJson(
+            '/api/projects',
+            $this->validProjectData(),
+        );
+
+        $response
+            ->assertCreated()
+            ->assertJsonPath('slug', 'portfolio-system-2');
+
+        $this->assertDatabaseHas('projects', [
+            'slug' => 'portfolio-system-2',
+        ]);
+
+        $this->assertDatabaseCount('projects', 2);
+    }
+
+    public function test_invalid_project_data_is_rejected(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user);
+
+        $response = $this->postJson('/api/projects', [
+            'title' => '',
+            'short_description' => '',
+            'description' => '',
+            'tech_stack' => [],
+            'github_url' => 'not-a-valid-url',
+            'is_published' => 'not-a-boolean',
+            'display_order' => -1,
+        ]);
+
+        $response
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors([
+                'title',
+                'short_description',
+                'description',
+                'tech_stack',
+                'github_url',
+                'is_published',
+                'display_order',
+            ]);
+
+        $this->assertDatabaseCount('projects', 0);
+    }
+
+    private function validProjectData(): array
+    {
+        return [
+            'title' => 'Portfolio System',
+            'short_description' => 'A developer portfolio management system.',
+            'description' => 'A full-stack portfolio built with Laravel and React.',
+            'tech_stack' => ['Laravel', 'React'],
+            'github_url' => 'https://github.com/nickos8/developer-portfolio',
+            'live_url' => null,
+            'is_featured' => true,
+            'is_published' => true,
+            'display_order' => 1,
+        ];
+    }
+}
