@@ -1,397 +1,495 @@
 # Developer Portfolio Project Memory
 
-> Permanent project handoff, learning record, and development plan.
+> Permanent technical handoff and resume point.
 >
-> Future assistant instruction: Read this file before suggesting the next task. After every verified development checkpoint, update the status, decisions, learning record, and next action. Never place passwords, tokens, connection URLs, `.env` values, or other secrets here.
+> Future assistant: read `AGENTS.md` and every document it references before changing the project. Inspect the working tree and tests because GitHub cannot contain uncommitted local work. Never document secrets.
 
-**Last updated:** 2026-08-19  
+**Last updated:** 2026-09-01  
 **Repository:** `nickos8/developer-portfolio`  
-**Current phase:** Projects CRUD, first public GET endpoint published  
-**Next exact task:** Learn Laravel Form Request validation and design project creation without exposing an unprotected public write route.
+**Default branch:** `main`  
+**Latest verified code commit:** `a26b3e5` — **Add admin authentication and protected project creation**  
+**Current phase:** Authenticated Projects CRUD; create operation and session authentication complete  
+**Next exact feature:** Design and implement the authenticated project-management interface in React, beginning with a project creation form that displays Laravel validation errors  
+**Working tree at checkpoint:** Local `main` clean and synchronized with `origin/main`
 
-## 1. Project purpose
+## 1. Purpose
 
-Build a professional full-stack developer portfolio that demonstrates the owner's skills as an entry-level BSIT graduate, particularly:
+Build a professional full-stack developer portfolio that demonstrates the owner's junior web development skills:
 
 - PHP and Laravel backend development
 - React and JavaScript frontend development
-- PostgreSQL relational database work
-- REST API design
-- CRUD operations and validation
+- PostgreSQL database design
+- REST-style JSON APIs
+- CRUD, validation, authentication, and authorization
+- automated and manual testing
 - Git and GitHub workflow
-- Manual testing and clear technical documentation
+- technical documentation and independent explanation
 
-The finished application should let visitors view published portfolio projects. A later management interface should allow project records to be created, updated, reordered, published, featured, and deleted.
+Visitors should be able to view published projects. The authenticated administrator should be able to create, update, publish, feature, reorder, and delete projects.
 
-## 2. Technology and structure
+The project is also a learning environment. Follow the teaching contract in `AGENTS.md`.
+
+## 2. Technology and environment
 
 | Layer | Technology | Responsibility |
 |---|---|---|
-| Frontend | React with Vite | User interface and API consumption |
-| Backend | Laravel 13 | Validation, business logic, API responses, and database access |
-| Database | Supabase PostgreSQL 17 | Persistent project data |
-| Version control | Git and GitHub | History, backup, and collaboration |
+| Frontend | React 19 with Vite 8 | SPA interface, state, forms, API requests |
+| HTTP client | Axios | Shared credentials and XSRF-aware request configuration |
+| Backend | Laravel 13 | Routes, validation, authentication, business logic, JSON |
+| Authentication | Laravel Sanctum 4.3 | First-party SPA session authentication |
+| Database | Supabase PostgreSQL | Persistent application data |
+| Tests | PHPUnit/Laravel with SQLite `:memory:` | Isolated backend verification |
+| Version control | Git and GitHub | History, backup, review, handoff |
 
-Repository layout:
+Repository:
 
 ```text
 developer-portfolio/
+├── AGENTS.md
 ├── backend/
 ├── frontend/
 └── docs/
-    └── PROJECT_MEMORY.md
+    ├── PROJECT_MEMORY.md
+    ├── LEARNING_LOG.md
+    ├── DECISIONS.md
+    └── HANDOFF_CHECKLIST.md
 ```
 
-Planned request flow:
+Windows paths:
 
 ```text
-React interface
-→ Laravel API route
-→ ProjectController
-→ validation
-→ Project model
-→ Supabase PostgreSQL
-→ JSON response
-→ React state and re-render
+C:\Users\Niko\developer-portfolio
+C:\Users\Niko\developer-portfolio\backend
+C:\Users\Niko\developer-portfolio\frontend
 ```
 
-## 3. Verified completed work
+Use Herd:
 
-### Checkpoint 1: Project initialization
+```cmd
+herd php
+herd composer
+```
 
-Commit: `394e356` — **Initialize Laravel 13 and React portfolio project**
+Plain PHP and Composer may use XAMPP PHP 8.2, which is incompatible with Laravel 13. The verified Herd PHP version is 8.4.24.
 
-- Created the Laravel 13 application in `backend/`
-- Created the React and Vite application in `frontend/`
-- Initialized the local Git repository
-- Confirmed the initial working tree was clean
+## 3. Published checkpoints
 
-### Checkpoint 2: Supabase PostgreSQL configuration
+### Initialization
 
-Commit: `15d0a8e` — **Configure Supabase PostgreSQL connection**
+- `394e356` — Initialize Laravel 13 and React portfolio project
+- Created separate `backend/` and `frontend/` applications
+- Initialized Git and confirmed ignores
 
-- Connected Laravel to a Supabase PostgreSQL project through the Session pooler
-- Configured SSL mode as `require`
-- Added configurable PostgreSQL schema support in `backend/config/database.php`
+### Supabase connection
+
+- `15d0a8e` — Configure Supabase PostgreSQL connection
+- Connected through the Supabase Session pooler
+- Required SSL
 - Used a dedicated `laravel` schema
-- Added safe database placeholders to `backend/.env.example`
-- Kept the real `backend/.env` excluded from Git
-- Ran Laravel's default migrations successfully
-- Verified nine default Laravel tables inside the `laravel` schema
+- Kept real environment values out of Git
+- Ran and verified Laravel default migrations
 
-Verified default tables:
+### Project database layer
 
-- `cache`
-- `cache_locks`
-- `failed_jobs`
-- `job_batches`
-- `jobs`
-- `migrations`
-- `password_reset_tokens`
-- `sessions`
-- `users`
+- `2607a9f` — Add Project model and database migration
+- Added Project model, fillable fields, and casts
+- Created and migrated the projects table
+- Verified the unique slug index and table columns
 
-### Checkpoint 3: Projects database layer
+### Public Projects API
 
-Commit: `2607a9f` — **Add Project model and database migration**
+- `27318f1` — Add public Projects API endpoint
+- Enabled API routing
+- Installed Sanctum for later authentication
+- Added public `GET /api/projects`
+- Filtered to published records
+- Ordered by display order
+- Manually verified the JSON response
 
-- Created `backend/app/Models/Project.php`
-- Created and ran the `projects` table migration
-- Configured mass-assignable fields
-- Configured model type casts
-- Verified the table in the `laravel` schema
-- Verified 14 columns and the unique slug index
+### Project-memory publication
 
-### Checkpoint 4: Public Projects API
+- `5497148` — Mark public Projects API as published
+- Recorded the first API checkpoint and safe continuation state
 
-Commit: `27318f1` — **Add public Projects API endpoint**
+### Authentication and protected project creation
 
-- Enabled Laravel API routing through `bootstrap/app.php`
-- Added `routes/api.php`
-- Installed Laravel Sanctum v4.3.3 for future authentication
-- Added `GET /api/projects`
-- Implemented `ProjectController@index`
-- Filters records to `is_published = true`
-- Orders records by `display_order`
-- Verified the endpoint manually with a valid empty JSON collection
-- Verified the existing automated test suite: 2 tests passed
-- Published the checkpoint to GitHub
+- `a26b3e5` — Add admin authentication and protected project creation
+- Added project validation and creation
+- Added unique slug generation
+- Added Sanctum stateful SPA configuration
+- Added login, current-user, and logout behavior
+- Added exact credentialed CORS configuration
+- Added an environment-backed administrator seeder
+- Added the shared Axios client
+- Added React login, session restoration, and logout
+- Added authentication and project API feature tests
+- Verified backend and frontend checks
+- Published to `origin/main`
 
-## 4. Projects table design
+## 4. Projects table
 
-| Column | Type | Purpose |
-|---|---|---|
-| `id` | bigint | Primary identifier |
-| `title` | varchar | Project name |
-| `slug` | unique varchar | URL-friendly unique identifier |
-| `short_description` | varchar(300) | Project-card summary |
-| `description` | text | Full project explanation |
-| `tech_stack` | JSON | List of technologies |
-| `github_url` | nullable varchar | Repository link |
-| `live_url` | nullable varchar | Deployed application link |
-| `image_path` | nullable varchar | Project image location |
-| `is_featured` | boolean, default false | Controls featured placement |
-| `is_published` | boolean, default false | Controls public visibility |
-| `display_order` | integer, default 0 | Controls ordering |
-| `created_at` | nullable timestamp | Creation time |
-| `updated_at` | nullable timestamp | Last update time |
-
-Indexes:
-
-- Primary index on `id`
-- Unique index on `slug`
+| Column | Purpose |
+|---|---|
+| `id` | Primary identifier |
+| `title` | Display name |
+| `slug` | Unique URL-friendly identifier |
+| `short_description` | Project-card summary, maximum 300 |
+| `description` | Full description |
+| `tech_stack` | JSON technology list |
+| `github_url` | Optional repository URL |
+| `live_url` | Optional deployed URL |
+| `image_path` | Optional image location |
+| `is_featured` | Featured placement flag |
+| `is_published` | Public visibility flag |
+| `display_order` | Manual ordering |
+| timestamps | Created and updated times |
 
 Model casts:
 
-- `tech_stack` → PHP array
-- `is_featured` → PHP boolean
-- `is_published` → PHP boolean
-- `display_order` → PHP integer
+- `tech_stack` → array
+- `is_featured` → boolean
+- `is_published` → boolean
+- `display_order` → integer
 
-## 5. Current development status
+## 5. Current backend behavior
 
-| Area | Status |
-|---|---|
-| React and Vite setup | Complete |
-| Laravel setup | Complete |
-| Supabase connection | Complete |
-| Default Laravel migrations | Complete |
-| Project model | Complete |
-| Projects migration | Complete |
-| Projects table verification | Complete |
-| ProjectController | Public `index()` complete; write actions remain |
-| Request validation | Next |
-| Projects API routes | Public `GET /api/projects` complete |
-| API endpoint testing | Public GET manually verified |
-| React API integration | Not started |
-| Public projects interface | Not started |
-| Project management interface | Planned |
-| Deployment | Planned |
-
-## 6. Latest verified checkpoint
-
-The public Projects read endpoint is committed and published.
+### Public project listing
 
 ```text
 GET /api/projects
-→ routes/api.php
 → ProjectController@index
-→ Project model
-→ Supabase PostgreSQL
+→ where is_published = true
+→ order by display_order
 → JSON collection
 ```
 
-Verification completed:
+The endpoint is public. An empty array means the query succeeded but no published projects matched.
 
-- Only `GET /api/projects` is registered in the API route file
-- Laravel Pint completed successfully
-- `herd php artisan migrate:status` showed no pending migrations
-- `curl http://127.0.0.1:8000/api/projects` returned `[]`
-- `[]` means the query succeeded but found no published projects
-- Existing automated suite passed: 2 tests, 2 assertions
-- Commit `27318f1` is published on `origin/main`
-- Local `main` was confirmed clean and synchronized immediately after the push
-
-Environment rule:
-
-- Use `herd php` and `herd composer` for this Laravel 13 project
-- Plain PHP and Composer still point to incompatible XAMPP PHP 8.2.12
-
-Next learning sequence:
-
-1. Understand why write endpoints require validation and authorization.
-2. Create a dedicated Form Request for project creation.
-3. Define rules for every project field.
-4. Implement `ProjectController@store`.
-5. Decide and configure authentication before exposing the POST route.
-6. Add endpoint-specific automated tests.
-
-## 7. Development roadmap
-
-### Phase 1: Projects backend CRUD
-
-1. Create `ProjectController`.
-2. Learn and define validation rules.
-3. Implement `index` for published project lists.
-4. Implement `store` for project creation.
-5. Implement `show` for one project.
-6. Implement `update` for editing.
-7. Implement `destroy` for deletion.
-8. Add API routes.
-9. Test success responses and validation errors.
-10. Commit the verified backend checkpoint.
-
-### Phase 2: React project display
-
-1. Create an API service or fetch layer.
-2. Fetch project data with `useEffect`.
-3. Store results in React state.
-4. Build reusable project-card components.
-5. Add loading, empty, and error states.
-6. Display featured and published projects.
-7. Test the Laravel-to-React data flow.
-
-### Phase 3: Portfolio interface
-
-Planned sections:
-
-- Hero and introduction
-- About
-- Skills and technology stack
-- Featured projects
-- All projects
-- Contact information
-- Resume or CV link
-
-### Phase 4: Project management
-
-- Project form
-- Create and edit operations
-- Publish and feature controls
-- Display ordering
-- Image handling
-- Authentication and route protection before exposing write operations publicly
-
-### Phase 5: Quality and deployment
-
-- Backend feature tests
-- Frontend behavior testing
-- Accessibility review
-- Responsive layout testing
-- Production environment setup
-- Deployment
-- Final professional README
-
-## 8. Technical decisions
-
-1. **Separate frontend and backend folders:** Makes the React client and Laravel API responsibilities clear.
-2. **Supabase PostgreSQL:** Provides a hosted database while Laravel remains responsible for application logic.
-3. **Dedicated `laravel` schema:** Keeps application tables separate from Supabase-managed `auth`, `storage`, and `realtime` schemas.
-4. **Session pooler connection:** Provides an IPv4-compatible external database connection.
-5. **Separate database environment variables:** Avoids URL-encoding problems and prevents the full connection URL from appearing in normal configuration output.
-6. **JSON technology stack:** Allows each project to contain a flexible list of technologies.
-7. **Unique slug:** Supports stable human-readable project URLs.
-8. **Published and featured flags:** Separates public visibility from prominent placement.
-9. **Display order:** Allows intentional project ordering without relying only on creation date.
-10. **Private repository during development:** Protects unfinished work. Visibility can change when the portfolio is ready.
-
-## 9. Learning record
-
-### Confirmed concepts
-
-- **Migration:** A version-controlled blueprint that creates or changes database structure.
-- **Model:** Laravel's interface for working with records in a database table.
-- **`$fillable`:** The approved list of fields Laravel may mass-assign.
-- **`casts()`:** Converts stored values into useful PHP types.
-- **Validation:** Checks whether submitted data follows defined correctness rules.
-- **Controller:** Receives a request and coordinates validation, model operations, and responses.
-- **Route:** Connects an HTTP request to a controller action.
-- **JSON response:** Structured data sent from Laravel to React.
-- **Local Git repository:** Version history stored on the computer.
-- **GitHub remote:** Online repository connected to the local Git history.
-
-High-yield distinction:
+### Protected project creation
 
 ```text
-$fillable = permission
-casts() = type conversion
-validation = correctness checking
+POST /api/projects
+→ auth:sanctum
+→ StoreProjectRequest authorization
+→ validation
+→ unique slug loop
+→ Project::create
+→ 201 JSON response
 ```
 
-### Concepts to reinforce later
+Validation includes:
 
-- Validation rules and Form Requests
-- HTTP verbs and REST conventions
-- Controller CRUD actions
-- HTTP status codes
-- React loading and error states
-- Authentication and authorization
-- Automated backend testing
+- required title, short description, description, and technology list
+- per-item technology validation
+- nullable valid GitHub and live URLs
+- optional booleans for featured and published
+- optional non-negative integer display order
 
-## 10. Problems solved
+Slug example:
 
-### Supabase password authentication failure
+```text
+Portfolio System → portfolio-system
+duplicate → portfolio-system-2
+next duplicate → portfolio-system-3
+```
 
-Cause:
+### Remaining project controller actions
 
-- The database password did not match the Supabase database role password.
-- An active `DB_URL` could override separate environment variables.
+- `show`: not implemented
+- `update`: not implemented
+- `destroy`: not implemented
+- image upload: not implemented
 
-Resolution:
+## 6. Authentication architecture
 
-- Reset the database password.
-- Removed the active `DB_URL`.
-- Used separate host, port, database, username, password, schema, and SSL variables.
-- Cleared Laravel configuration and verified the connection.
+This is a first-party SPA using Laravel session cookies recognized by Sanctum.
 
-Security action:
+### Middleware
 
-- Previously exposed credentials were rotated.
-- Real secrets remain only in the ignored local `.env`.
+`bootstrap/app.php` enables:
 
-### Composer used incompatible XAMPP PHP
+```php
+$middleware->statefulApi();
+```
 
-Cause:
+This allows stateful SPA requests. It does not log in a user.
 
-- Plain `composer` used XAMPP PHP 8.2.12.
-- Laravel 13 dependencies require PHP 8.3 or newer.
-- `install:api` therefore could not install Sanctum through the plain Composer executable.
+### Web authentication routes
 
-Resolution:
+- `POST /login`
+- `POST /logout`, protected by `auth`
 
-- Verified Herd PHP and Composer use PHP 8.4.24.
-- Installed Sanctum v4.3.3 with `herd composer require laravel/sanctum`.
-- Established the rule to use Herd-prefixed PHP and Composer commands for this project.
+Login:
 
-### Windows CMD parsing error with Tinker
+1. `LoginRequest` validates email and password.
+2. `Auth::attempt` checks the credentials.
+3. Incorrect credentials return a validation error.
+4. The session is regenerated.
+5. JSON returns the authenticated user.
 
-Cause:
+Logout:
 
-- Windows CMD interpreted parentheses and quoting before Artisan received the command.
+1. logs out the web guard
+2. invalidates the session
+3. regenerates the CSRF token
+4. returns `204 No Content`
 
-Resolution:
+### Protected current-user endpoint
 
-- Used `herd php artisan db:show --database=pgsql` for the connection test.
+- `GET /api/user`
+- protected by `auth:sanctum`
+- returns the current authenticated user
 
-## 11. Safe continuation checklist
+### CORS and environment
 
-At the beginning of a future session:
+`config/cors.php` covers API, login, logout, and Sanctum CSRF paths, allows the configured frontend origin, and supports credentials.
 
-1. Read this entire document.
-2. Run `git status`.
-3. Run `git pull` if the working tree is clean.
-4. Confirm the current branch.
-5. Review the current and next tasks above.
-6. Work on one concept and one verified checkpoint at a time.
-7. Update this file after verification.
-8. Commit and push code plus documentation.
-9. Never commit or display `.env` or credentials.
+Safe placeholders are in `backend/.env.example`:
 
-Useful local commands:
+- `ADMIN_NAME`
+- `ADMIN_EMAIL`
+- `ADMIN_PASSWORD`
+- `FRONTEND_URL`
+
+Real values remain only in ignored `backend/.env`.
+
+### Administrator seeder
+
+`AdminUserSeeder`:
+
+1. reads `config('admin')`
+2. validates the three values
+3. uses `User::updateOrCreate` by email
+4. relies on the User model's hashed password cast
+
+The seeder was run successfully and Tinker confirmed the configured administrator exists.
+
+## 7. Current React behavior
+
+### Shared API client
+
+`frontend/src/api.js` configures:
+
+- base URL from `VITE_API_URL`, falling back to local Laravel
+- `withCredentials: true`
+- `withXSRFToken: true`
+- JSON acceptance
+
+Axios is declared in `package.json` and locked in `package-lock.json`.
+
+### Login
+
+```text
+GET /sanctum/csrf-cookie
+→ POST /login
+→ GET /api/user
+→ set React user state
+```
+
+Wrong credentials display the backend error. Correct credentials display the administrator welcome state.
+
+### Session restoration
+
+On initial render, `useEffect` requests `/api/user` while the interface shows a session-checking state.
+
+- valid session → restore React user state
+- missing or invalid session → show login form
+
+This prevents a refresh from losing the authenticated interface while the Laravel session is still valid.
+
+### Logout
+
+The React interface posts to `/logout`, clears its local user state, and returns to the login form. Refreshing after logout remains logged out.
+
+### Next frontend work
+
+The current `App.jsx` is an authentication proof-of-flow, not the final portfolio design.
+
+Next:
+
+1. authenticated project creation form
+2. controlled inputs for every validated field
+3. dynamic technology list or a clear initial input strategy
+4. submit through the shared API client
+5. display Laravel `422` field errors
+6. show successful creation response
+7. refetch or update the project list
+8. separate components as the interface grows
+
+## 8. Verification evidence
+
+### Manual browser and HTTP checks
+
+Verified:
+
+- wrong login credentials are rejected
+- correct login displays the administrator
+- `/api/user` returns `401` without an authenticated session
+- authenticated session is recognized
+- refresh restores the user
+- logout works
+- refresh after logout remains logged out
+- credentialed CORS returns the exact React origin and allows credentials
+- unauthenticated project creation returns `401`
+
+### Backend tests
+
+Latest complete result at commit `a26b3e5`:
+
+```text
+Tests: 10 passed (34 assertions)
+Duration: 1.11s
+```
+
+Authentication tests:
+
+- guest cannot access current-user endpoint
+- user can login and access it
+- incorrect credentials are rejected
+- authenticated user can logout
+
+Project API tests:
+
+- guest cannot create a project
+- authenticated session can create a project
+- duplicate title receives a unique slug
+- invalid data is rejected
+
+The project tests use `$this->actingAs($user)` because the real application uses session authentication. The earlier `Sanctum::actingAs` attempt failed with missing `withAccessToken()` because it simulated token authentication.
+
+`backend/phpunit.xml` uses:
+
+```text
+DB_CONNECTION=sqlite
+DB_DATABASE=:memory:
+```
+
+Tests do not modify Supabase.
+
+### Frontend
+
+Latest results:
+
+```text
+npm run lint
+Found 0 warnings and 0 errors.
+
+npm run build
+Vite production build completed successfully.
+```
+
+### Git checks
+
+- `git diff --check` produced only Windows LF/CRLF warnings, no whitespace errors
+- exact intended files were staged
+- real `.env` was not staged
+- commit `a26b3e5` pushed successfully
+- local `main` confirmed clean and synchronized with `origin/main`
+
+## 9. Current status
+
+| Area | Status |
+|---|---|
+| Laravel and React setup | Complete |
+| Supabase PostgreSQL | Complete |
+| Project model and migration | Complete |
+| Public project listing | Complete |
+| Project store validation | Complete |
+| Unique slug creation | Complete |
+| Protected project POST | Complete |
+| Admin seeder | Complete |
+| SPA login | Complete |
+| Session restoration | Complete |
+| Logout | Complete |
+| Credentialed CORS | Complete |
+| Authentication tests | Complete |
+| Project creation tests | Complete |
+| React project creation form | Next |
+| Public portfolio design | Not started |
+| Project show endpoint | Not started |
+| Project update endpoint | Not started |
+| Project delete endpoint | Not started |
+| Image handling | Not started |
+| Deployment | Planned |
+
+## 10. Exact resume procedure
+
+1. Read `AGENTS.md` and all linked documentation.
+2. From the project root:
 
 ```cmd
-git status
-git log --oneline --decorate -5
-git pull
+git status --short --untracked-files=all
+git log --oneline --decorate -10
+git fetch origin
+git status -sb
 ```
 
-Backend commands should be run from `backend/`:
+3. If the tree is clean and documentation changes have been merged remotely, synchronize with:
 
 ```cmd
-herd php artisan migrate:status
-herd php artisan db:table projects
+git pull --ff-only origin main
 ```
 
-## 12. Documentation update policy
+4. Re-run verification if the environment or code has changed:
 
-Update this file whenever any of the following occurs:
+```cmd
+cd backend
+herd php artisan test
+cd ..\frontend
+npm run lint
+npm run build
+```
 
-- A feature begins or finishes
-- A migration or model changes
-- An API endpoint is verified
-- A significant error is solved
-- A technical decision changes
-- A learning concept is confirmed or remains weak
-- The exact next task changes
+5. Begin the React project-creation form by first inspecting:
+   - `frontend/src/App.jsx`
+   - `frontend/src/api.js`
+   - `backend/app/Http/Requests/StoreProjectRequest.php`
+   - `backend/routes/api.php`
 
-A task is marked **complete** only after its result is verified. Keep entries concise, factual, and free of secrets.
+6. Teach controlled form state and backend validation-error mapping before implementing the complete form.
+
+## 11. Roadmap
+
+### Authenticated Projects CRUD
+
+- [x] Public list
+- [x] Validated create
+- [x] Protected create route
+- [x] Backend create tests
+- [ ] React create interface
+- [ ] Single-project read
+- [ ] Validated update
+- [ ] Delete
+- [ ] CRUD test coverage
+- [ ] Image upload
+
+### Public portfolio
+
+- [ ] Hero
+- [ ] About
+- [ ] Skills
+- [ ] Featured projects
+- [ ] All published projects
+- [ ] Contact
+- [ ] Resume link
+- [ ] Responsive and accessible styling
+
+### Quality and deployment
+
+- [ ] Component-level frontend structure
+- [ ] Loading, empty, success, and error states
+- [ ] CI checks
+- [ ] Production environment plan
+- [ ] Hosting deployment
+- [ ] Supabase production verification
+- [ ] Final README and portfolio documentation
+- [ ] Resume project entry and screenshots
+
+## 12. Related documentation
+
+- `AGENTS.md`: permanent AI teaching and safety contract
+- `docs/LEARNING_LOG.md`: confirmed learning and concepts to reinforce
+- `docs/DECISIONS.md`: architectural decisions and tradeoffs
+- `docs/HANDOFF_CHECKLIST.md`: safe resume, pause, commit, and assistant-change procedure
+
+Update this memory only from verified evidence. Never include secrets.
