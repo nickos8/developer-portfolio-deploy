@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom'
-import { site } from '../data/site'
+import { useSiteProfile } from '../context/useSiteProfile'
 
 export default function Footer() {
+  const { profile: site } = useSiteProfile()
+
   return (
     <footer className="footer">
       <div className="container footer-inner">

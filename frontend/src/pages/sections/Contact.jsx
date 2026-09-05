@@ -1,6 +1,8 @@
-import { site } from '../../data/site'
+import { useSiteProfile } from '../../context/useSiteProfile'
 
 export default function Contact() {
+  const { profile: site } = useSiteProfile()
+
   return (
     <section id="contact" className="section" aria-labelledby="contact-heading">
       <div className="container">

@@ -1,6 +1,8 @@
-import { site } from '../../data/site'
+import { useSiteProfile } from '../../context/useSiteProfile'
 
 export default function About() {
+  const { profile: site } = useSiteProfile()
+
   return (
     <section id="about" className="section" aria-labelledby="about-heading">
       <div className="container">

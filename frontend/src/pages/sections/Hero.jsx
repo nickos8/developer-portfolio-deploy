@@ -1,6 +1,8 @@
-import { site } from '../../data/site'
+import { useSiteProfile } from '../../context/useSiteProfile'
 
 export default function Hero() {
+  const { profile: site } = useSiteProfile()
+
   return (
     <section className="hero" aria-label="Introduction">
       <div className="container hero-inner">

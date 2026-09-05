@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom'
-import { site } from '../data/site'
+import { useSiteProfile } from '../context/useSiteProfile'
 
 export default function Navbar() {
+  const { profile: site } = useSiteProfile()
+
   return (
     <header className="navbar">
       <div className="container navbar-inner">
