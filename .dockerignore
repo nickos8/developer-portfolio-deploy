@@ -1,0 +1,13 @@
+.git
+.github
+docs
+**/node_modules
+**/vendor
+backend/.env
+backend/storage/logs/*
+backend/storage/framework/cache/*
+backend/storage/framework/sessions/*
+backend/storage/framework/views/*
+backend/database/database.sqlite
+backend/public/app
+frontend/dist

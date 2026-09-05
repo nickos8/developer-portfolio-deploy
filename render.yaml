@@ -1,0 +1,72 @@
+# Render Blueprint: https://render.com/docs/blueprint-spec
+#
+# Deploys the whole app (Laravel API + built React SPA) as a single Docker
+# web service. See DEPLOYMENT.md for the full walkthrough, including which
+# of the "sync: false" values below you need to fill in yourself and why
+# a couple of them require a second deploy to set correctly.
+
+services:
+  - type: web
+    name: developer-portfolio
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /up
+    envVars:
+      - key: APP_NAME
+        value: Developer Portfolio
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      # Generate locally with `php artisan key:generate --show` and paste
+      # the result in the Render dashboard -- never commit a real key.
+      - key: APP_KEY
+        sync: false
+      # Set to this service's Render URL (e.g. https://developer-portfolio.onrender.com)
+      # once Render assigns it -- see DEPLOYMENT.md step 5.
+      - key: APP_URL
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      # Same host as APP_URL, without the scheme, e.g. developer-portfolio.onrender.com
+      - key: SANCTUM_STATEFUL_DOMAINS
+        sync: false
+
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: 5432
+      - key: DB_DATABASE
+        value: postgres
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_SCHEMA
+        value: laravel
+      - key: DB_SSLMODE
+        value: require
+
+      - key: SESSION_DRIVER
+        value: database
+      - key: SESSION_DOMAIN
+        value: null
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: LOG_CHANNEL
+        value: stack
+      - key: LOG_LEVEL
+        value: error
+
+      - key: ADMIN_NAME
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false

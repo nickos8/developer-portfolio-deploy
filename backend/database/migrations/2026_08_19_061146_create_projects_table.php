@@ -11,21 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::create('projects', function (Blueprint $table) {
-    $table->id();
-    $table->string('title');
-    $table->string('slug')->unique();
-    $table->string('short_description', 300);
-    $table->text('description');
-    $table->json('tech_stack');
-    $table->string('github_url')->nullable();
-    $table->string('live_url')->nullable();
-    $table->string('image_path')->nullable();
-    $table->boolean('is_featured')->default(false);
-    $table->boolean('is_published')->default(false);
-    $table->unsignedInteger('display_order')->default(0);
-    $table->timestamps();
-});
+        Schema::create('projects', function (Blueprint $table) {
+            $table->id();
+            $table->string('title');
+            $table->string('slug')->unique();
+            $table->string('short_description', 300);
+            $table->text('description');
+            $table->json('tech_stack');
+            $table->string('github_url')->nullable();
+            $table->string('live_url')->nullable();
+            $table->string('image_path')->nullable();
+            $table->boolean('is_featured')->default(false);
+            $table->boolean('is_published')->default(false);
+            $table->unsignedInteger('display_order')->default(0);
+            $table->timestamps();
+        });
     }
 
     /**
