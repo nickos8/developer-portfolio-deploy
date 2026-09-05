@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Models\SiteProfile;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class SiteProfileApiTest extends TestCase
@@ -106,5 +108,69 @@ class SiteProfileApiTest extends TestCase
                 'skills.0.items',
                 'social_links.0.url',
             ]);
+    }
+
+    public function test_guest_cannot_upload_an_avatar(): void
+    {
+        Storage::fake('public');
+
+        $this->postJson('/api/site-profile/avatar', [
+            'avatar' => UploadedFile::fake()->image('me.jpg'),
+        ])
+            ->assertUnauthorized();
+    }
+
+    public function test_authenticated_user_can_upload_an_avatar(): void
+    {
+        Storage::fake('public');
+
+        $this->actingAs(User::factory()->create());
+
+        $response = $this->post(
+            '/api/site-profile/avatar',
+            ['avatar' => UploadedFile::fake()->image('me.jpg')],
+            ['Accept' => 'application/json'],
+        );
+
+        $response->assertOk();
+
+        $path = $response->json('avatar_path');
+
+        $this->assertNotEmpty($path);
+        Storage::disk('public')->assertExists($path);
+    }
+
+    public function test_uploading_a_new_avatar_removes_the_previous_one(): void
+    {
+        Storage::fake('public');
+
+        $profile = SiteProfile::current();
+        $profile->update(['avatar_path' => 'profile/old.jpg']);
+        Storage::disk('public')->put('profile/old.jpg', 'fake-contents');
+
+        $this->actingAs(User::factory()->create());
+
+        $this->post(
+            '/api/site-profile/avatar',
+            ['avatar' => UploadedFile::fake()->image('new.jpg')],
+            ['Accept' => 'application/json'],
+        )->assertOk();
+
+        Storage::disk('public')->assertMissing('profile/old.jpg');
+    }
+
+    public function test_avatar_upload_requires_a_valid_image_file(): void
+    {
+        Storage::fake('public');
+
+        $this->actingAs(User::factory()->create());
+
+        $this->post(
+            '/api/site-profile/avatar',
+            ['avatar' => UploadedFile::fake()->create('notes.txt', 10)],
+            ['Accept' => 'application/json'],
+        )
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['avatar']);
     }
 }

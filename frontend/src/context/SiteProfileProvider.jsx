@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import api from '../api'
+import api, { resolveStorageUrl } from '../api'
 import { site as fallbackProfile } from '../data/site'
 import { SiteProfileContext } from './site-profile-context'
 
@@ -16,6 +16,7 @@ function normalizeProfile(apiProfile) {
     location: apiProfile.location,
     email: apiProfile.email,
     resumeUrl: apiProfile.resume_url || fallbackProfile.resumeUrl,
+    avatarUrl: resolveStorageUrl(apiProfile.avatar_path),
     about: apiProfile.about,
     skills: apiProfile.skills,
     socialLinks: apiProfile.social_links,

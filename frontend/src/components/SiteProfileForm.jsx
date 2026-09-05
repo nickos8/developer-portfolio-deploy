@@ -93,6 +93,34 @@ function SiteProfileFormFields() {
   const [successMessage, setSuccessMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  const [avatarFile, setAvatarFile] = useState(null)
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
+  const [avatarError, setAvatarError] = useState('')
+
+  async function handleAvatarUpload(event) {
+    event.preventDefault()
+
+    if (!avatarFile) {
+      return
+    }
+
+    setIsUploadingAvatar(true)
+    setAvatarError('')
+
+    const formData = new FormData()
+    formData.append('avatar', avatarFile)
+
+    try {
+      const response = await api.post('/api/site-profile/avatar', formData)
+      setProfileFromApi(response.data)
+      setAvatarFile(null)
+    } catch (error) {
+      setAvatarError(apiErrorMessage(error, 'Failed to upload the photo.'))
+    } finally {
+      setIsUploadingAvatar(false)
+    }
+  }
+
   function updateField(name, value) {
     setFields((current) => ({ ...current, [name]: value }))
   }
@@ -125,7 +153,32 @@ function SiteProfileFormFields() {
   const socialErrors = fieldErrorsFor(errors, 'social_links')
 
   return (
-    <form onSubmit={handleSubmit} className="form" noValidate>
+    <div className="project-form-wrapper">
+      <div className="image-upload">
+        <h4>Profile photo</h4>
+
+        {profile.avatarUrl && <img src={profile.avatarUrl} alt="" className="hero-avatar" />}
+
+        <form onSubmit={handleAvatarUpload} className="form-row">
+          <input
+            type="file"
+            accept="image/*"
+            aria-label="Profile photo file"
+            onChange={(event) => setAvatarFile(event.target.files?.[0] ?? null)}
+          />
+          <button type="submit" className="button" disabled={!avatarFile || isUploadingAvatar}>
+            {isUploadingAvatar ? 'Uploading...' : 'Upload photo'}
+          </button>
+        </form>
+
+        {avatarError && (
+          <p className="form-error" role="alert">
+            {avatarError}
+          </p>
+        )}
+      </div>
+
+      <form onSubmit={handleSubmit} className="form" noValidate>
       <div className="form-row">
         <div className="form-field">
           <label htmlFor="profile-name">Name</label>
@@ -266,6 +319,7 @@ function SiteProfileFormFields() {
           {isSubmitting ? 'Saving...' : 'Save profile'}
         </button>
       </div>
-    </form>
+      </form>
+    </div>
   )
 }

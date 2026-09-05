@@ -23,4 +23,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::put('/site-profile', [SiteProfileController::class, 'update']);
     Route::patch('/site-profile', [SiteProfileController::class, 'update']);
+    Route::post('/site-profile/avatar', [SiteProfileController::class, 'uploadAvatar']);
 });

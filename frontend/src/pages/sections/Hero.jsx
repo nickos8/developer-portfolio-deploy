@@ -6,6 +6,7 @@ export default function Hero() {
   return (
     <section className="hero" aria-label="Introduction">
       <div className="container hero-inner">
+        {site.avatarUrl && <img className="hero-avatar" src={site.avatarUrl} alt={site.name} />}
         <p className="eyebrow">{site.role}</p>
         <h1>{site.name}</h1>
         <p className="hero-tagline">{site.tagline}</p>

@@ -13,6 +13,7 @@ class SiteProfile extends Model
         'location',
         'email',
         'resume_url',
+        'avatar_path',
         'about',
         'skills',
         'social_links',
