@@ -32,9 +32,16 @@ export function resolveStorageUrl(path) {
 /**
  * Extract a readable message from a failed API call, falling back to a
  * generic message when the response has no useful text of its own.
+ * Prefers the specific field error from a 422 validation response (e.g.
+ * "The avatar field must not be greater than 8192 kilobytes.") over the
+ * generic top-level message, so callers don't need to special-case
+ * validation errors themselves.
  */
 export function apiErrorMessage(error, fallback = 'Something went wrong. Please try again.') {
-  return error.response?.data?.message || fallback
+  const data = error.response?.data
+  const firstValidationError = data?.errors && Object.values(data.errors)[0]?.[0]
+
+  return firstValidationError || data?.message || fallback
 }
 
 export default api

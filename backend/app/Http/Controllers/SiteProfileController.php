@@ -37,7 +37,9 @@ class SiteProfileController extends Controller
     public function uploadAvatar(Request $request)
     {
         $request->validate([
-            'avatar' => ['required', 'image', 'max:4096'],
+            // 8MB -- comfortable for a phone-camera photo without a
+            // detour through a compressor first.
+            'avatar' => ['required', 'image', 'max:8192'],
         ]);
 
         $profile = SiteProfile::current();

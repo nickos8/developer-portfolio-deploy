@@ -29,6 +29,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && docker-php-ext-install pdo pdo_pgsql pgsql mbstring xml bcmath \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# The official image's default upload_max_filesize/post_max_size (2M/8M)
+# are too small for a phone-camera photo, which is below Laravel's own
+# 8MB validation limit (ProjectController/SiteProfileController) but
+# would still get silently truncated by PHP before Laravel ever sees it.
+RUN { \
+    echo 'upload_max_filesize = 10M'; \
+    echo 'post_max_size = 12M'; \
+    } > /usr/local/etc/php/conf.d/uploads.ini
+
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app

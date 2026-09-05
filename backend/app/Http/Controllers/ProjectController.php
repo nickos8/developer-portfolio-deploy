@@ -93,7 +93,9 @@ class ProjectController extends Controller
     public function uploadImage(Request $request, Project $project)
     {
         $request->validate([
-            'image' => ['required', 'image', 'max:4096'],
+            // 8MB -- comfortable for a phone-camera photo without a
+            // detour through a compressor first.
+            'image' => ['required', 'image', 'max:8192'],
         ]);
 
         if ($project->image_path) {
